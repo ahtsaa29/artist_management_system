@@ -134,18 +134,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw const AuthException('Failed to get authentication token');
       }
 
-      // Sign in to Firebase
       final credential = GoogleAuthProvider.credential(idToken: idToken);
       final userCredential = await firebaseAuth.signInWithCredential(
         credential,
       );
       final uid = userCredential.user!.uid;
 
-      // Check if Firestore user record exists
       final doc = await firestore.collection(_usersCollection).doc(uid).get();
       if (doc.exists) return UserModel.fromFirestore(doc);
 
-      // First-time sign-in — create Firestore record
       final role = await _assignRole();
       final now = DateTime.now();
       final nameParts = (googleUser.displayName ?? '').split(' ');

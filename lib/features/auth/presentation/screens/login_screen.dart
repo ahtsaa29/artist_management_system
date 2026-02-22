@@ -121,7 +121,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           : null,
                     ),
                     const SizedBox(height: 32),
-                    // Email Sign In
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) => ElevatedButton(
                         onPressed: state is AuthLoading
@@ -153,7 +152,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    // Divider
                     Row(
                       children: [
                         const Expanded(child: Divider(color: Colors.white24)),
@@ -169,7 +167,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    // Google Sign In
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) => OutlinedButton.icon(
                         onPressed: state is AuthLoading
