@@ -1,10 +1,25 @@
 part of 'artist_bloc.dart';
 
-sealed class ArtistState extends Equatable {
+abstract class ArtistState extends Equatable {
   const ArtistState();
-  
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
-final class ArtistInitial extends ArtistState {}
+class ArtistInitial extends ArtistState {}
+
+class ArtistLoading extends ArtistState {}
+
+class ArtistLoaded extends ArtistState {
+  final List<ArtistEntity> artists;
+  const ArtistLoaded(this.artists);
+  @override
+  List<Object> get props => [artists];
+}
+
+class ArtistError extends ArtistState {
+  final String message;
+  const ArtistError(this.message);
+  @override
+  List<Object> get props => [message];
+}

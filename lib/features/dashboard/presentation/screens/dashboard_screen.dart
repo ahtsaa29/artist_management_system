@@ -1,8 +1,12 @@
+import 'package:artist_management_system/features/artist/presentation/bloc/artist_bloc.dart';
+import 'package:artist_management_system/features/artist/presentation/screens/artist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import '../../../../injection_container.dart';
 import '../../../auth/domain/entities/user_entity.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../user/presentation/bloc/user_bloc.dart';
+import '../../../user/presentation/screens/users_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   final UserEntity user;
@@ -43,51 +47,59 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Artist Management',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              '${widget.user.fullName} · ${widget.user.role}',
-              style: const TextStyle(fontSize: 12, color: Colors.white54),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => sl<UserBloc>()..add(UserWatchStarted())),
+        BlocProvider(
+          create: (_) => sl<ArtistBloc>()..add(ArtistWatchStarted()),
+        ),
+      ],
+      child: Scaffold(
+        appBar: AppBar(
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Artist Management',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                '${widget.user.fullName} · ${widget.user.role}',
+                style: const TextStyle(fontSize: 12, color: Colors.white54),
+              ),
+            ],
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () => _logout(context),
+              tooltip: 'Logout',
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => _logout(context),
-            tooltip: 'Logout',
-          ),
-        ],
-      ),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: [
-          // UsersScreen(currentUserId: widget.user.id),
-          // const ArtistsScreen(),
-        ],
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (i) => setState(() => _selectedIndex = i),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.people_outline),
-            selectedIcon: Icon(Icons.people),
-            label: 'Users',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.mic_none_outlined),
-            selectedIcon: Icon(Icons.mic),
-            label: 'Artists',
-          ),
-        ],
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: [
+            UsersScreen(currentUserId: widget.user.id),
+            const ArtistsScreen(),
+          ],
+        ),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: _selectedIndex,
+          onDestinationSelected: (i) => setState(() => _selectedIndex = i),
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.people_outline),
+              selectedIcon: Icon(Icons.people),
+              label: 'Users',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.mic_none_outlined),
+              selectedIcon: Icon(Icons.mic),
+              label: 'Artists',
+            ),
+          ],
+        ),
       ),
     );
   }

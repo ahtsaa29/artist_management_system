@@ -7,50 +7,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1028995432995:android:a60945b26f3217785b2796",
-        "android_client_info": {
-          "package_name": "com.example.artist_management"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1028995432995-jg41gcuq0d20qsof7gq8c2bt6nkn4in0.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.artist_management",
-            "certificate_hash": "d192ddfb26ba1a9beda65f83f933706898a0b783"
-          }
-        },
-        {
-          "client_id": "1028995432995-99mepubddvdpl46tk67mgkqeieogneq6.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAhy9Dy1IYFD0WJ4nu1VLJvIEBzxTHD8v4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1028995432995-99mepubddvdpl46tk67mgkqeieogneq6.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "1028995432995-559k3qofgaej2dc26dmui199nar1gcph.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.artistManagement"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:1028995432995:android:333cd1314abba0b85b2796",
         "android_client_info": {
           "package_name": "com.example.artist_management_system"

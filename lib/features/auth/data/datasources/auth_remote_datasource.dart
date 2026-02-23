@@ -121,7 +121,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final GoogleSignIn signIn = GoogleSignIn.instance;
       await signIn.initialize(
         serverClientId:
-            '1028995432995-jg41gcuq0d20qsof7gq8c2bt6nkn4in0.apps.googleusercontent.com',
+            '1028995432995-99mepubddvdpl46tk67mgkqeieogneq6.apps.googleusercontent.com',
       );
 
       await signIn.signOut();

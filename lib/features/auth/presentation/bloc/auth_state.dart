@@ -19,7 +19,6 @@ class AuthAuthenticated extends AuthState {
 
 class AuthUnauthenticated extends AuthState {}
 
-/// Emitted after successful registration — user must now login manually.
 class AuthRegistered extends AuthState {
   final String message;
   const AuthRegistered(this.message);
