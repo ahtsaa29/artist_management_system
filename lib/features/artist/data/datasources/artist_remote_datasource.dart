@@ -55,7 +55,6 @@ class ArtistRemoteDataSourceImpl implements ArtistRemoteDataSource {
   @override
   Future<void> deleteArtist(String artistId) async {
     try {
-      // Cascade: delete songs first
       final songs = await firestore
           .collection(_songs)
           .where('artist_id', isEqualTo: artistId)

@@ -67,14 +67,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     final result = await googleSignInUser(const NoParams());
     result.fold(
-      (failure) {
-        print('❌ AuthBloc Google error: ${failure.message}');
-        emit(AuthError(failure.message));
-      },
-      (user) {
-        print('✅ AuthBloc Google success: ${user.email}');
-        emit(AuthAuthenticated(user));
-      },
+      (failure) => emit(AuthError(failure.message)),
+      (user) => emit(AuthAuthenticated(user)),
     );
   }
 

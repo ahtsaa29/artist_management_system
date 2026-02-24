@@ -159,7 +159,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         updatedAt: now,
       );
       await firestore.collection(_usersCollection).doc(uid).set(model.toMap());
-      print('✅ Google sign-in successful: ${model.email}');
 
       return model;
     } on AuthException {
@@ -169,9 +168,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     } on FirebaseException catch (e) {
       throw ServerException(e.message ?? 'Google sign-in failed.');
     } catch (e, stack) {
-      print('❌ Google sign-in error: ${e.toString()} \n $stack');
-
-      throw AuthException('Google sign-in failed: ${e.toString()}');
+      throw AuthException('Google sign-in failed: ${e.toString()}\n$stack');
     }
   }
 

@@ -6,7 +6,5 @@ abstract class ArtistRepository {
   Stream<Either<Failure, List<ArtistEntity>>> watchArtists();
   Future<Either<Failure, void>> createArtist(ArtistEntity artist);
   Future<Either<Failure, void>> updateArtist(ArtistEntity artist);
-
-  /// Deletes the artist AND all their songs.
   Future<Either<Failure, void>> deleteArtist(String artistId);
 }

@@ -5,8 +5,6 @@ import 'package:equatable/equatable.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 
-// ─── WatchArtists ────────────────────────────────────────────────────────────
-
 class WatchArtists {
   final ArtistRepository repository;
   const WatchArtists(this.repository);
@@ -15,8 +13,6 @@ class WatchArtists {
     return repository.watchArtists();
   }
 }
-
-// ─── CreateArtist ─────────────────────────────────────────────────────────────
 
 class CreateArtist implements UseCase<void, CreateArtistParams> {
   final ArtistRepository repository;
@@ -35,8 +31,6 @@ class CreateArtistParams extends Equatable {
   List<Object> get props => [artist];
 }
 
-// ─── UpdateArtist ─────────────────────────────────────────────────────────────
-
 class UpdateArtist implements UseCase<void, UpdateArtistParams> {
   final ArtistRepository repository;
   const UpdateArtist(this.repository);
@@ -53,8 +47,6 @@ class UpdateArtistParams extends Equatable {
   @override
   List<Object> get props => [artist];
 }
-
-// ─── DeleteArtist ─────────────────────────────────────────────────────────────
 
 class DeleteArtist implements UseCase<void, DeleteArtistParams> {
   final ArtistRepository repository;
