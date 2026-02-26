@@ -1,5 +1,7 @@
+import 'package:artist_management_system/features/song/domain/repository/song_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 
 // Auth
@@ -20,11 +22,11 @@ import 'features/artist/domain/repository/artist_repository.dart';
 import 'features/artist/domain/usecases/artist_usecases.dart';
 import 'features/artist/presentation/bloc/artist_bloc.dart';
 
-// // Song
-// import 'features/song/data/datasources/song_remote_datasource.dart';
-// import 'features/song/data/repositories/song_repository_impl.dart';
-// import 'features/song/domain/usecases/song_usecases.dart';
-// import 'features/song/presentation/bloc/song_bloc.dart';
+// Song
+import 'features/song/data/datasources/song_remote_datasource.dart';
+import 'features/song/data/repositories/song_repository_impl.dart';
+import 'features/song/domain/usecases/song_usecases.dart';
+import 'features/song/presentation/bloc/song_bloc.dart';
 
 // // User
 import 'features/user/data/datasources/user_remote_datasource.dart';
@@ -92,5 +94,26 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => DeleteUser(sl()));
   sl.registerFactory(
     () => UserBloc(watchUsers: sl(), updateUser: sl(), deleteUser: sl()),
+  );
+
+  // ─── Song ──────────────────────────────────────────────────────────────────
+  sl.registerLazySingleton(() => FirebaseStorage.instance);
+  sl.registerLazySingleton<SongRemoteDataSource>(
+    () => SongRemoteDataSourceImpl(firestore: sl(), storage: sl()),
+  );
+  sl.registerLazySingleton<SongRepository>(
+    () => SongRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton(() => WatchSongsForArtist(sl()));
+  sl.registerLazySingleton(() => CreateSong(sl()));
+  sl.registerLazySingleton(() => UpdateSong(sl()));
+  sl.registerLazySingleton(() => DeleteSong(sl()));
+  sl.registerFactory(
+    () => SongBloc(
+      watchSongsForArtist: sl(),
+      createSong: sl(),
+      updateSong: sl(),
+      deleteSong: sl(),
+    ),
   );
 }
