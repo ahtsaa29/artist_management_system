@@ -1,12 +1,12 @@
+import 'package:artist_management_system/core/usecases/usecase.dart';
+import 'package:artist_management_system/features/auth/domain/entities/user_entity.dart';
+import 'package:artist_management_system/features/auth/domain/usecases/get_current_user.dart';
 import 'package:artist_management_system/features/auth/domain/usecases/google_signin_user.dart';
+import 'package:artist_management_system/features/auth/domain/usecases/login_user.dart';
+import 'package:artist_management_system/features/auth/domain/usecases/logout_user.dart';
+import 'package:artist_management_system/features/auth/domain/usecases/register_user.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../domain/entities/user_entity.dart';
-import '../../domain/usecases/get_current_user.dart';
-import '../../domain/usecases/login_user.dart';
-import '../../domain/usecases/logout_user.dart';
-import '../../domain/usecases/register_user.dart';
-import '../../../../core/usecases/usecase.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';

@@ -1,10 +1,10 @@
+import 'package:artist_management_system/core/error/exceptions.dart';
+import 'package:artist_management_system/core/error/failures.dart';
+import 'package:artist_management_system/features/artist/data/datasources/artist_remote_datasource.dart';
+import 'package:artist_management_system/features/artist/data/models/artist_model.dart';
 import 'package:artist_management_system/features/artist/domain/entities/artist.dart';
 import 'package:artist_management_system/features/artist/domain/repository/artist_repository.dart';
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/exceptions.dart';
-import '../../../../core/error/failures.dart';
-import '../datasources/artist_remote_datasource.dart';
-import '../models/artist_model.dart';
 
 class ArtistRepositoryImpl implements ArtistRepository {
   final ArtistRemoteDataSource remoteDataSource;

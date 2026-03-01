@@ -1,7 +1,11 @@
+import 'package:artist_management_system/features/auth/domain/entities/user_entity.dart';
+import 'package:artist_management_system/features/user/presentation/bloc/user_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../auth/domain/entities/user_entity.dart';
-import '../bloc/user_bloc.dart';
+
+part '../widgets/user_tile.dart';
+part '../widgets/user_edit_sheet.dart';
+part '../widgets/user_delete_dialog.dart';
 
 class UsersScreen extends StatelessWidget {
   final String currentUserId;
@@ -27,11 +31,11 @@ class UsersScreen extends StatelessWidget {
             separatorBuilder: (_, _) => const SizedBox(height: 8),
             itemBuilder: (context, i) {
               final user = state.users[i];
-              return _UserTile(
+              return UserTile(
                 user: user,
                 isCurrentUser: user.id == currentUserId,
                 onEdit: () => _showEditSheet(context, user),
-                onDelete: () => _confirmDelete(context, user),
+                onDelete: () => _showDeleteDialog(context, user),
               );
             },
           );
@@ -42,194 +46,22 @@ class UsersScreen extends StatelessWidget {
   }
 
   void _showEditSheet(BuildContext context, UserEntity user) {
-    final firstCtrl = TextEditingController(text: user.firstName);
-    final lastCtrl = TextEditingController(text: user.lastName);
-    final phoneCtrl = TextEditingController(text: user.phone);
-    final addressCtrl = TextEditingController(text: user.address);
-    String gender = user.gender;
-    final formKey = GlobalKey<FormState>();
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (sheetCtx) => BlocProvider.value(
+      builder: (_) => BlocProvider.value(
         value: context.read<UserBloc>(),
-        child: Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(sheetCtx).viewInsets.bottom,
-            left: 16,
-            right: 16,
-            top: 24,
-          ),
-          child: StatefulBuilder(
-            builder: (ctx, setState) => Form(
-              key: formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Edit User',
-                    style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: firstCtrl,
-                          decoration: const InputDecoration(
-                            labelText: 'First Name',
-                          ),
-                          validator: (v) =>
-                              v?.isEmpty == true ? 'Required' : null,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextFormField(
-                          controller: lastCtrl,
-                          decoration: const InputDecoration(
-                            labelText: 'Last Name',
-                          ),
-                          validator: (v) =>
-                              v?.isEmpty == true ? 'Required' : null,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: phoneCtrl,
-                    decoration: const InputDecoration(labelText: 'Phone'),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: addressCtrl,
-                    decoration: const InputDecoration(labelText: 'Address'),
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    initialValue: gender,
-                    decoration: const InputDecoration(labelText: 'Gender'),
-                    items: const [
-                      DropdownMenuItem(value: 'm', child: Text('Male')),
-                      DropdownMenuItem(value: 'f', child: Text('Female')),
-                      DropdownMenuItem(value: 'o', child: Text('Other')),
-                    ],
-                    onChanged: (v) => setState(() => gender = v!),
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (formKey.currentState!.validate()) {
-                          context.read<UserBloc>().add(
-                            UserUpdateRequested(
-                              user.copyWith(
-                                firstName: firstCtrl.text.trim(),
-                                lastName: lastCtrl.text.trim(),
-                                phone: phoneCtrl.text.trim(),
-                                address: addressCtrl.text.trim(),
-                                gender: gender,
-                              ),
-                            ),
-                          );
-                          Navigator.pop(sheetCtx);
-                        }
-                      },
-                      child: const Text('Save'),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-              ),
-            ),
-          ),
-        ),
+        child: UserEditSheet(user: user),
       ),
     );
   }
 
-  void _confirmDelete(BuildContext context, UserEntity user) {
+  void _showDeleteDialog(BuildContext context, UserEntity user) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Delete User'),
-        content: Text('Delete ${user.fullName}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              context.read<UserBloc>().add(UserDeleteRequested(user.id));
-              Navigator.pop(context);
-            },
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: Colors.redAccent),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _UserTile extends StatelessWidget {
-  final UserEntity user;
-  final bool isCurrentUser;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-
-  const _UserTile({
-    required this.user,
-    required this.isCurrentUser,
-    required this.onEdit,
-    required this.onDelete,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: const Color(0xFF6C63FF),
-          child: Text(
-            user.firstName[0].toUpperCase(),
-            style: const TextStyle(color: Colors.white),
-          ),
-        ),
-        title: Text(
-          user.fullName,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-        subtitle: Text(
-          '${user.email} · ${user.role}${isCurrentUser ? ' (you)' : ''}',
-        ),
-        trailing: isCurrentUser
-            ? null
-            : Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    onPressed: onEdit,
-                    icon: const Icon(Icons.edit_outlined, size: 20),
-                  ),
-                  IconButton(
-                    onPressed: onDelete,
-                    icon: const Icon(
-                      Icons.delete_outline,
-                      size: 20,
-                      color: Colors.redAccent,
-                    ),
-                  ),
-                ],
-              ),
+      builder: (_) => BlocProvider.value(
+        value: context.read<UserBloc>(),
+        child: UserDeleteDialog(user: user),
       ),
     );
   }

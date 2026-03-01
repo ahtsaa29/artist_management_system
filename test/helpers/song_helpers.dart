@@ -1,5 +1,3 @@
-import 'dart:io';
-import 'package:artist_management_system/core/error/exceptions.dart';
 import 'package:artist_management_system/core/error/failures.dart';
 import 'package:artist_management_system/features/song/data/datasources/song_remote_datasource.dart';
 import 'package:artist_management_system/features/song/data/models/song_model.dart';
@@ -7,14 +5,10 @@ import 'package:artist_management_system/features/song/domain/entities/song.dart
 import 'package:artist_management_system/features/song/domain/repository/song_repository.dart';
 import 'package:dartz/dartz.dart';
 
-// ─── Shared date ─────────────────────────────────────────────────────────────
-
 final tNow = DateTime(2024, 1, 1);
 const tArtistId = 'artist-1';
 const tSongId = 'song-1';
 const tVideoUrl = 'https://storage.googleapis.com/bucket/songs/song-1.mp4';
-
-// ─── Entity fixtures ──────────────────────────────────────────────────────────
 
 SongEntity tSong({
   String id = tSongId,
@@ -36,8 +30,6 @@ SongEntity tSong({
 
 SongEntity tSongWithVideo() => tSong(mp4Url: tVideoUrl);
 
-// ─── Model fixtures ───────────────────────────────────────────────────────────
-
 SongModel tSongModel({String? mp4Url}) => SongModel(
   id: tSongId,
   artistId: tArtistId,
@@ -50,8 +42,6 @@ SongModel tSongModel({String? mp4Url}) => SongModel(
 );
 
 SongModel tSongModelWithVideo() => tSongModel(mp4Url: tVideoUrl);
-
-// ─── Mock SongRepository ──────────────────────────────────────────────────────
 
 class MockSongRepository implements SongRepository {
   Stream<Either<Failure, List<SongEntity>>>? _watchStream;
@@ -71,25 +61,17 @@ class MockSongRepository implements SongRepository {
   ) => _watchStream ?? const Stream.empty();
 
   @override
-  Future<Either<Failure, void>> createSong(
-    SongEntity song, {
-    File? videoFile,
-  }) async => _createResult;
+  Future<Either<Failure, void>> createSong(SongEntity song) async =>
+      _createResult;
 
   @override
-  Future<Either<Failure, void>> updateSong(
-    SongEntity song, {
-    File? videoFile,
-  }) async => _updateResult;
+  Future<Either<Failure, void>> updateSong(SongEntity song) async =>
+      _updateResult;
 
   @override
-  Future<Either<Failure, void>> deleteSong(
-    String songId, {
-    String? mp4Url,
-  }) async => _deleteResult;
+  Future<Either<Failure, void>> deleteSong(String songId) async =>
+      _deleteResult;
 }
-
-// ─── Mock SongRemoteDataSource ────────────────────────────────────────────────
 
 class MockSongRemoteDataSource implements SongRemoteDataSource {
   Stream<List<SongModel>>? _watchStream;
@@ -107,17 +89,17 @@ class MockSongRemoteDataSource implements SongRemoteDataSource {
       _watchStream ?? const Stream.empty();
 
   @override
-  Future<void> createSong(SongModel song, {File? videoFile}) async {
+  Future<void> createSong(SongModel song) async {
     if (_createError != null) throw _createError!;
   }
 
   @override
-  Future<void> updateSong(SongModel song, {File? videoFile}) async {
+  Future<void> updateSong(SongModel song) async {
     if (_updateError != null) throw _updateError!;
   }
 
   @override
-  Future<void> deleteSong(String songId, {String? mp4Url}) async {
+  Future<void> deleteSong(String songId) async {
     if (_deleteError != null) throw _deleteError!;
   }
 }

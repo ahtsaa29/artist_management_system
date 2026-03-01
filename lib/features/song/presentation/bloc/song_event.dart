@@ -18,36 +18,32 @@ class SongCreateRequested extends SongEvent {
   final String title;
   final String albumName;
   final String genre;
-  final File? videoFile;
 
   const SongCreateRequested({
     required this.artistId,
     required this.title,
     required this.albumName,
     required this.genre,
-    this.videoFile,
   });
 
   @override
-  List<Object?> get props => [artistId, title, albumName, genre, videoFile];
+  List<Object?> get props => [artistId, title, albumName, genre];
 }
 
 class SongUpdateRequested extends SongEvent {
   final SongEntity song;
-  final File? videoFile;
 
-  const SongUpdateRequested({required this.song, this.videoFile});
+  const SongUpdateRequested({required this.song});
 
   @override
-  List<Object?> get props => [song, videoFile];
+  List<Object?> get props => [song];
 }
 
 class SongDeleteRequested extends SongEvent {
   final String songId;
-  final String? mp4Url;
 
-  const SongDeleteRequested({required this.songId, this.mp4Url});
+  const SongDeleteRequested({required this.songId});
 
   @override
-  List<Object?> get props => [songId, mp4Url];
+  List<Object?> get props => [songId];
 }

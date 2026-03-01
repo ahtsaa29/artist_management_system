@@ -1,7 +1,9 @@
-import 'dart:io';
 import 'package:artist_management_system/features/song/domain/entities/song.dart';
 import 'package:artist_management_system/core/error/failures.dart';
-import 'package:artist_management_system/features/song/domain/usecases/song_usecases.dart';
+import 'package:artist_management_system/features/song/domain/usecases/create_song_usecase.dart';
+import 'package:artist_management_system/features/song/domain/usecases/delete_song_usecase.dart';
+import 'package:artist_management_system/features/song/domain/usecases/update_song_usecase.dart';
+import 'package:artist_management_system/features/song/domain/usecases/watch_song_usecase.dart';
 import 'package:artist_management_system/features/song/presentation/bloc/song_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
@@ -21,7 +23,6 @@ void main() {
 
   setUp(() => repo = MockSongRepository());
 
-  // ─── Initial state ────────────────────────────────────────────────────────
   test('initial state is SongInitial', () {
     expect(_bloc(repo).state, isA<SongInitial>());
   });
@@ -89,21 +90,6 @@ void main() {
         isA<SongLoaded>().having((s) => s.songs.length, 'count', 3),
       ],
     );
-
-    blocTest<SongBloc, SongState>(
-      'Loaded state contains songs with correct data',
-      build: () {
-        repo.stubWatch(Stream.value(Right([tSongWithVideo()])));
-        return _bloc(repo);
-      },
-      act: (b) => b.add(const SongWatchStarted(tArtistId)),
-      expect: () => [
-        isA<SongLoading>(),
-        isA<SongLoaded>()
-            .having((s) => s.songs.first.hasVideo, 'hasVideo', isTrue)
-            .having((s) => s.songs.first.mp4Url, 'mp4Url', tVideoUrl),
-      ],
-    );
   });
 
   // ─── SongCreateRequested ──────────────────────────────────────────────────
@@ -116,31 +102,14 @@ void main() {
     );
 
     blocTest<SongBloc, SongState>(
-      'emits nothing on success without video (stream handles UI update)',
+      'emits nothing on success',
       build: () => _bloc(repo),
       act: (b) => b.add(tCreateEvent),
       expect: () => [],
     );
 
     blocTest<SongBloc, SongState>(
-      'emits [SongUploading(0.0)] when videoFile is provided',
-      build: () => _bloc(repo),
-      act: (b) => b.add(
-        SongCreateRequested(
-          artistId: tArtistId,
-          title: 'Song With Video',
-          albumName: 'Album',
-          genre: 'rock',
-          videoFile: File('/tmp/test.mp4'),
-        ),
-      ),
-      expect: () => [
-        isA<SongUploading>().having((s) => s.progress, 'progress', 0.0),
-      ],
-    );
-
-    blocTest<SongBloc, SongState>(
-      'emits SongError on create failure without video',
+      'emits SongError on create failure',
       build: () {
         repo.stubCreate(Left(const ServerFailure('Failed to create song.')));
         return _bloc(repo);
@@ -156,40 +125,17 @@ void main() {
     );
 
     blocTest<SongBloc, SongState>(
-      'emits [SongUploading, SongError] when video provided but create fails',
-      build: () {
-        repo.stubCreate(Left(const ServerFailure('Storage error')));
-        return _bloc(repo);
-      },
-      act: (b) => b.add(
-        SongCreateRequested(
-          artistId: tArtistId,
-          title: 'Song',
-          albumName: 'Album',
-          genre: 'rock',
-          videoFile: File('/tmp/test.mp4'),
-        ),
-      ),
-      expect: () => [
-        isA<SongUploading>(),
-        isA<SongError>().having((s) => s.message, 'message', 'Storage error'),
-      ],
-    );
-
-    blocTest<SongBloc, SongState>(
       'created song uses a UUID as id (non-empty)',
       build: () {
         String? capturedId;
         final capturingRepo = _IdCapturingRepo(
-          onCreate: (song, _) {
+          onCreate: (song) {
             capturedId = song.id;
             return const Right(null);
           },
         );
-        // ignore: unused_local_variable
-        final b = _bloc(capturingRepo);
         addTearDown(() => expect(capturedId, isNotEmpty));
-        return b;
+        return _bloc(capturingRepo);
       },
       act: (b) => b.add(tCreateEvent),
       expect: () => [],
@@ -199,24 +145,10 @@ void main() {
   // ─── SongUpdateRequested ──────────────────────────────────────────────────
   group('SongUpdateRequested', () {
     blocTest<SongBloc, SongState>(
-      'emits nothing on success without video',
+      'emits nothing on success',
       build: () => _bloc(repo),
       act: (b) => b.add(SongUpdateRequested(song: tSong())),
       expect: () => [],
-    );
-
-    blocTest<SongBloc, SongState>(
-      'emits [SongUploading(0.0)] when videoFile is provided',
-      build: () => _bloc(repo),
-      act: (b) => b.add(
-        SongUpdateRequested(
-          song: tSongWithVideo(),
-          videoFile: File('/tmp/new.mp4'),
-        ),
-      ),
-      expect: () => [
-        isA<SongUploading>().having((s) => s.progress, 'progress', 0.0),
-      ],
     );
 
     blocTest<SongBloc, SongState>(
@@ -234,34 +166,14 @@ void main() {
         ),
       ],
     );
-
-    blocTest<SongBloc, SongState>(
-      'emits [SongUploading, SongError] when video + update fails',
-      build: () {
-        repo.stubUpdate(Left(const ServerFailure('Storage error')));
-        return _bloc(repo);
-      },
-      act: (b) => b.add(
-        SongUpdateRequested(song: tSong(), videoFile: File('/tmp/replace.mp4')),
-      ),
-      expect: () => [isA<SongUploading>(), isA<SongError>()],
-    );
   });
 
   // ─── SongDeleteRequested ──────────────────────────────────────────────────
   group('SongDeleteRequested', () {
     blocTest<SongBloc, SongState>(
-      'emits nothing on success without video',
+      'emits nothing on success',
       build: () => _bloc(repo),
       act: (b) => b.add(const SongDeleteRequested(songId: tSongId)),
-      expect: () => [],
-    );
-
-    blocTest<SongBloc, SongState>(
-      'emits nothing on success with mp4Url (storage cleaned in datasource)',
-      build: () => _bloc(repo),
-      act: (b) =>
-          b.add(const SongDeleteRequested(songId: tSongId, mp4Url: tVideoUrl)),
       expect: () => [],
     );
 
@@ -279,24 +191,6 @@ void main() {
           'Failed to delete song.',
         ),
       ],
-    );
-
-    blocTest<SongBloc, SongState>(
-      'passes mp4Url to delete usecase',
-      build: () {
-        String? capturedUrl;
-        final capturingRepo = _IdCapturingRepo(
-          onDelete: (_, url) {
-            capturedUrl = url;
-            return const Right(null);
-          },
-        );
-        addTearDown(() => expect(capturedUrl, tVideoUrl));
-        return _bloc(capturingRepo);
-      },
-      act: (b) =>
-          b.add(const SongDeleteRequested(songId: tSongId, mp4Url: tVideoUrl)),
-      expect: () => [],
     );
   });
 
@@ -328,34 +222,15 @@ void main() {
     test('SongError not equal with different messages', () {
       expect(const SongError('err1'), isNot(equals(const SongError('err2'))));
     });
-
-    test('SongUploading equal when same progress', () {
-      expect(const SongUploading(0.5), equals(const SongUploading(0.5)));
-    });
-
-    test('SongUploading not equal with different progress', () {
-      expect(const SongUploading(0.0), isNot(equals(const SongUploading(1.0))));
-    });
   });
 }
 
-// ─── Capturing repo for argument verification ─────────────────────────────────
-
 class _IdCapturingRepo extends MockSongRepository {
-  final Either<Failure, void> Function(SongEntity, File?)? onCreate;
-  final Either<Failure, void> Function(String, String?)? onDelete;
+  final Either<Failure, void> Function(SongEntity)? onCreate;
 
-  _IdCapturingRepo({this.onCreate, this.onDelete});
-
-  @override
-  Future<Either<Failure, void>> createSong(
-    SongEntity song, {
-    File? videoFile,
-  }) async => onCreate?.call(song, videoFile) ?? const Right(null);
+  _IdCapturingRepo({this.onCreate});
 
   @override
-  Future<Either<Failure, void>> deleteSong(
-    String songId, {
-    String? mp4Url,
-  }) async => onDelete?.call(songId, mp4Url) ?? const Right(null);
+  Future<Either<Failure, void>> createSong(SongEntity song) async =>
+      onCreate?.call(song) ?? const Right(null);
 }

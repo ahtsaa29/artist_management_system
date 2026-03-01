@@ -1,8 +1,8 @@
+import 'package:artist_management_system/core/error/exceptions.dart';
+import 'package:artist_management_system/features/auth/data/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import '../../../../core/error/exceptions.dart';
-import '../models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<UserModel?> getCurrentUser();

@@ -1,5 +1,5 @@
+import 'package:artist_management_system/features/auth/domain/entities/user_entity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../domain/entities/user_entity.dart';
 
 class UserModel extends UserEntity {
   const UserModel({

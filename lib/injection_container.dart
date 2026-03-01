@@ -1,4 +1,12 @@
+import 'package:artist_management_system/features/artist/domain/usecases/create_artist_usecase.dart';
+import 'package:artist_management_system/features/artist/domain/usecases/delete_artisit_usecase.dart';
+import 'package:artist_management_system/features/artist/domain/usecases/update_artist_usecase.dart';
 import 'package:artist_management_system/features/song/domain/repository/song_repository.dart';
+import 'package:artist_management_system/features/song/domain/usecases/create_song_usecase.dart';
+import 'package:artist_management_system/features/song/domain/usecases/delete_song_usecase.dart';
+import 'package:artist_management_system/features/song/domain/usecases/update_song_usecase.dart';
+import 'package:artist_management_system/features/user/domain/usecases/delete_user_usecase.dart';
+import 'package:artist_management_system/features/user/domain/usecases/update_user_usecase.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -15,23 +23,23 @@ import 'features/auth/domain/usecases/logout_user.dart';
 import 'features/auth/domain/usecases/register_user.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 
-// // Artist
+//  Artist
 import 'features/artist/data/datasources/artist_remote_datasource.dart';
 import 'features/artist/data/repositories/artist_repository_impl.dart';
 import 'features/artist/domain/repository/artist_repository.dart';
-import 'features/artist/domain/usecases/artist_usecases.dart';
+import 'features/artist/domain/usecases/watch_artist_usecase.dart';
 import 'features/artist/presentation/bloc/artist_bloc.dart';
 
 // Song
 import 'features/song/data/datasources/song_remote_datasource.dart';
 import 'features/song/data/repositories/song_repository_impl.dart';
-import 'features/song/domain/usecases/song_usecases.dart';
+import 'features/song/domain/usecases/watch_song_usecase.dart';
 import 'features/song/presentation/bloc/song_bloc.dart';
 
-// // User
+// User
 import 'features/user/data/datasources/user_remote_datasource.dart';
 import 'features/user/data/repositories/user_repository_impl.dart';
-import 'features/user/domain/usecases/user_usecase.dart';
+import 'features/user/domain/usecases/watch_user_usecase.dart';
 import 'features/user/presentation/bloc/user_bloc.dart';
 import 'features/user/domain/repositories/user_repository.dart';
 

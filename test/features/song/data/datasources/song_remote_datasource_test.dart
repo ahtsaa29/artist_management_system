@@ -142,7 +142,7 @@ void main() {
 
     test('completes without error when mp4Url provided', () async {
       await _seedSong(fakeFs, tSongModelWithVideo());
-      expect(() => ds.deleteSong(tSongId, mp4Url: tVideoUrl), returnsNormally);
+      expect(() => ds.deleteSong(tSongId), returnsNormally);
     });
 
     test('does not throw if song document does not exist', () async {

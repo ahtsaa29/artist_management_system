@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:artist_management_system/core/error/exceptions.dart';
 import 'package:artist_management_system/core/error/failures.dart';
 import 'package:artist_management_system/features/song/data/models/song_model.dart';
@@ -17,7 +16,6 @@ void main() {
     repo = SongRepositoryImpl(remoteDataSource: ds);
   });
 
-  // ─── watchSongsForArtist ──────────────────────────────────────────────────
   group('watchSongsForArtist', () {
     test('returns Right(songs) when datasource emits models', () async {
       ds.stubWatch(Stream.value([tSongModel()]));
@@ -63,18 +61,9 @@ void main() {
     });
   });
 
-  // ─── createSong ───────────────────────────────────────────────────────────
   group('createSong', () {
-    test('returns Right(null) on success without video', () async {
+    test('returns Right(null) on success', () async {
       final result = await repo.createSong(tSong());
-      expect(result, const Right(null));
-    });
-
-    test('returns Right(null) on success with video file', () async {
-      final result = await repo.createSong(
-        tSong(),
-        videoFile: File('/tmp/video.mp4'),
-      );
       expect(result, const Right(null));
     });
 
@@ -97,18 +86,9 @@ void main() {
     });
   });
 
-  // ─── updateSong ───────────────────────────────────────────────────────────
   group('updateSong', () {
     test('returns Right(null) on success', () async {
       final result = await repo.updateSong(tSong());
-      expect(result, const Right(null));
-    });
-
-    test('returns Right(null) when replacing video', () async {
-      final result = await repo.updateSong(
-        tSongWithVideo(),
-        videoFile: File('/tmp/new.mp4'),
-      );
       expect(result, const Right(null));
     });
 
@@ -131,15 +111,9 @@ void main() {
     });
   });
 
-  // ─── deleteSong ───────────────────────────────────────────────────────────
   group('deleteSong', () {
-    test('returns Right(null) on success without video', () async {
+    test('returns Right(null) on success', () async {
       final result = await repo.deleteSong(tSongId);
-      expect(result, const Right(null));
-    });
-
-    test('returns Right(null) on success with mp4Url', () async {
-      final result = await repo.deleteSong(tSongId, mp4Url: tVideoUrl);
       expect(result, const Right(null));
     });
 

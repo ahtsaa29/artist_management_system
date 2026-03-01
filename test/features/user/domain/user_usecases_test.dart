@@ -1,5 +1,7 @@
 import 'package:artist_management_system/core/error/failures.dart';
-import 'package:artist_management_system/features/user/domain/usecases/user_usecase.dart';
+import 'package:artist_management_system/features/user/domain/usecases/delete_user_usecase.dart';
+import 'package:artist_management_system/features/user/domain/usecases/update_user_usecase.dart';
+import 'package:artist_management_system/features/user/domain/usecases/watch_user_usecase.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 

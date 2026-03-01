@@ -1,8 +1,9 @@
-import 'package:artist_management_system/features/user/domain/usecases/user_usecase.dart';
+import 'package:artist_management_system/features/auth/domain/entities/user_entity.dart';
+import 'package:artist_management_system/features/user/domain/usecases/delete_user_usecase.dart';
+import 'package:artist_management_system/features/user/domain/usecases/update_user_usecase.dart';
+import 'package:artist_management_system/features/user/domain/usecases/watch_user_usecase.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../../auth/domain/entities/user_entity.dart';
-
 part 'user_event.dart';
 part 'user_state.dart';
 

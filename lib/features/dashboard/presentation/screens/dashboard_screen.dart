@@ -1,12 +1,12 @@
 import 'package:artist_management_system/features/artist/presentation/bloc/artist_bloc.dart';
 import 'package:artist_management_system/features/artist/presentation/screens/artist_screen.dart';
+import 'package:artist_management_system/features/auth/domain/entities/user_entity.dart';
+import 'package:artist_management_system/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:artist_management_system/features/user/presentation/bloc/user_bloc.dart';
+import 'package:artist_management_system/features/user/presentation/screens/users_screen.dart';
+import 'package:artist_management_system/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../injection_container.dart';
-import '../../../auth/domain/entities/user_entity.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../user/presentation/bloc/user_bloc.dart';
-import '../../../user/presentation/screens/users_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   final UserEntity user;

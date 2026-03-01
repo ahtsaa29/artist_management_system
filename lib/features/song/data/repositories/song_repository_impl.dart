@@ -1,11 +1,10 @@
-import 'dart:io';
+import 'package:artist_management_system/core/error/exceptions.dart';
+import 'package:artist_management_system/core/error/failures.dart';
+import 'package:artist_management_system/features/song/data/datasources/song_remote_datasource.dart';
+import 'package:artist_management_system/features/song/data/models/song_model.dart';
+import 'package:artist_management_system/features/song/domain/entities/song.dart';
+import 'package:artist_management_system/features/song/domain/repository/song_repository.dart';
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/exceptions.dart';
-import '../../../../core/error/failures.dart';
-import '../../domain/entities/song.dart';
-import '../../domain/repository/song_repository.dart';
-import '../datasources/song_remote_datasource.dart';
-import '../models/song_model.dart';
 
 class SongRepositoryImpl implements SongRepository {
   final SongRemoteDataSource remoteDataSource;
@@ -23,15 +22,9 @@ class SongRepositoryImpl implements SongRepository {
   }
 
   @override
-  Future<Either<Failure, void>> createSong(
-    SongEntity song, {
-    File? videoFile,
-  }) async {
+  Future<Either<Failure, void>> createSong(SongEntity song) async {
     try {
-      await remoteDataSource.createSong(
-        SongModel.fromEntity(song),
-        videoFile: videoFile,
-      );
+      await remoteDataSource.createSong(SongModel.fromEntity(song));
       return const Right(null);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
@@ -39,15 +32,9 @@ class SongRepositoryImpl implements SongRepository {
   }
 
   @override
-  Future<Either<Failure, void>> updateSong(
-    SongEntity song, {
-    File? videoFile,
-  }) async {
+  Future<Either<Failure, void>> updateSong(SongEntity song) async {
     try {
-      await remoteDataSource.updateSong(
-        SongModel.fromEntity(song),
-        videoFile: videoFile,
-      );
+      await remoteDataSource.updateSong(SongModel.fromEntity(song));
       return const Right(null);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
@@ -55,12 +42,9 @@ class SongRepositoryImpl implements SongRepository {
   }
 
   @override
-  Future<Either<Failure, void>> deleteSong(
-    String songId, {
-    String? mp4Url,
-  }) async {
+  Future<Either<Failure, void>> deleteSong(String songId) async {
     try {
-      await remoteDataSource.deleteSong(songId, mp4Url: mp4Url);
+      await remoteDataSource.deleteSong(songId);
       return const Right(null);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));

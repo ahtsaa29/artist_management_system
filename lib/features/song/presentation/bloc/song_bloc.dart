@@ -1,10 +1,11 @@
-import 'dart:io';
+import 'package:artist_management_system/features/song/domain/entities/song.dart';
+import 'package:artist_management_system/features/song/domain/usecases/create_song_usecase.dart';
+import 'package:artist_management_system/features/song/domain/usecases/delete_song_usecase.dart';
+import 'package:artist_management_system/features/song/domain/usecases/update_song_usecase.dart';
+import 'package:artist_management_system/features/song/domain/usecases/watch_song_usecase.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:uuid/uuid.dart';
-import '../../domain/entities/song.dart';
-import '../../domain/usecases/song_usecases.dart';
-
 part 'song_event.dart';
 part 'song_state.dart';
 
@@ -45,8 +46,6 @@ class SongBloc extends Bloc<SongEvent, SongState> {
     SongCreateRequested event,
     Emitter<SongState> emit,
   ) async {
-    if (event.videoFile != null) emit(const SongUploading(0.0));
-
     final now = DateTime.now();
     final song = SongEntity(
       id: _uuid.v4(),
@@ -58,9 +57,7 @@ class SongBloc extends Bloc<SongEvent, SongState> {
       updatedAt: now,
     );
 
-    final result = await createSong(
-      CreateSongParams(song: song, videoFile: event.videoFile),
-    );
+    final result = await createSong(CreateSongParams(song: song));
     result.fold((failure) => emit(SongError(failure.message)), (_) {});
   }
 
@@ -68,11 +65,7 @@ class SongBloc extends Bloc<SongEvent, SongState> {
     SongUpdateRequested event,
     Emitter<SongState> emit,
   ) async {
-    if (event.videoFile != null) emit(const SongUploading(0.0));
-
-    final result = await updateSong(
-      UpdateSongParams(song: event.song, videoFile: event.videoFile),
-    );
+    final result = await updateSong(UpdateSongParams(song: event.song));
     result.fold((failure) => emit(SongError(failure.message)), (_) {});
   }
 
@@ -80,9 +73,7 @@ class SongBloc extends Bloc<SongEvent, SongState> {
     SongDeleteRequested event,
     Emitter<SongState> emit,
   ) async {
-    final result = await deleteSong(
-      DeleteSongParams(songId: event.songId, mp4Url: event.mp4Url),
-    );
+    final result = await deleteSong(DeleteSongParams(songId: event.songId));
     result.fold((failure) => emit(SongError(failure.message)), (_) {});
   }
 }

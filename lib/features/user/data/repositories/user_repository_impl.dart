@@ -1,10 +1,10 @@
+import 'package:artist_management_system/core/error/exceptions.dart';
+import 'package:artist_management_system/core/error/failures.dart';
+import 'package:artist_management_system/features/auth/data/models/user_model.dart';
+import 'package:artist_management_system/features/auth/domain/entities/user_entity.dart';
+import 'package:artist_management_system/features/user/data/datasources/user_remote_datasource.dart';
+import 'package:artist_management_system/features/user/domain/repositories/user_repository.dart';
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/exceptions.dart';
-import '../../../../core/error/failures.dart';
-import '../../../auth/data/models/user_model.dart';
-import '../../../auth/domain/entities/user_entity.dart';
-import '../../domain/repositories/user_repository.dart';
-import '../datasources/user_remote_datasource.dart';
 
 class UserRepositoryImpl implements UserRepository {
   final UserRemoteDataSource remoteDataSource;

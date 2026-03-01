@@ -1,8 +1,8 @@
+import 'package:artist_management_system/core/error/failures.dart';
+import 'package:artist_management_system/core/usecases/usecase.dart';
+import 'package:artist_management_system/features/auth/domain/entities/user_entity.dart';
 import 'package:artist_management_system/features/auth/domain/repository/auth_repository.dart';
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failures.dart';
-import '../../../../core/usecases/usecase.dart';
-import '../entities/user_entity.dart';
 
 class GoogleSignInUser implements UseCase<UserEntity, NoParams> {
   final AuthRepository repository;

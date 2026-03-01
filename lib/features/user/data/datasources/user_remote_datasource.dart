@@ -1,6 +1,6 @@
+import 'package:artist_management_system/core/error/exceptions.dart';
+import 'package:artist_management_system/features/auth/data/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../../../core/error/exceptions.dart';
-import '../../../auth/data/models/user_model.dart';
 
 abstract class UserRemoteDataSource {
   Stream<List<UserModel>> watchUsers();

@@ -1,7 +1,12 @@
 import 'package:artist_management_system/features/artist/domain/entities/artist.dart';
+import 'package:artist_management_system/features/artist/presentation/bloc/artist_bloc.dart';
+import 'package:artist_management_system/features/song/presentation/screens/songs_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/artist_bloc.dart';
+
+part '../widgets/artist_tile.dart';
+part '../widgets/artist_form_sheet.dart';
+part '../widgets/artist_delete_dialog.dart';
 
 class ArtistsScreen extends StatelessWidget {
   const ArtistsScreen({super.key});
@@ -41,11 +46,19 @@ class ArtistsScreen extends StatelessWidget {
               separatorBuilder: (_, _) => const SizedBox(height: 8),
               itemBuilder: (context, i) {
                 final artist = state.artists[i];
-                return _ArtistTile(
+                return ArtistTile(
                   artist: artist,
-                  onTap: () => _openSongs(context, artist),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => SongsScreen(
+                        artistId: artist.id,
+                        artistName: artist.name,
+                      ),
+                    ),
+                  ),
                   onEdit: () => _showArtistForm(context, artist: artist),
-                  onDelete: () => _confirmDelete(context, artist),
+                  onDelete: () => _showDeleteDialog(context, artist),
                 );
               },
             );
@@ -60,235 +73,23 @@ class ArtistsScreen extends StatelessWidget {
     );
   }
 
-  void _openSongs(BuildContext context, ArtistEntity artist) {
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (_) => BlocProvider(
-    //       create: (_) =>
-    //           sl<SongBloc>()..add(SongWatchStarted(artist.id)),
-    //       child: SongsScreen(artist: artist),
-    //     ),
-    //   ),
-    // );
-  }
-
   void _showArtistForm(BuildContext context, {ArtistEntity? artist}) {
-    final nameCtrl = TextEditingController(text: artist?.name);
-    final addressCtrl = TextEditingController(text: artist?.address);
-    final albumsCtrl = TextEditingController(
-      text: artist?.noOfAlbumsReleased.toString() ?? '0',
-    );
-    final yearCtrl = TextEditingController(
-      text: artist?.firstReleaseYear?.toString() ?? '',
-    );
-    String gender = artist?.gender ?? 'm';
-    final formKey = GlobalKey<FormState>();
-    final isEdit = artist != null;
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (sheetCtx) => BlocProvider.value(
+      builder: (_) => BlocProvider.value(
         value: context.read<ArtistBloc>(),
-        child: Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(sheetCtx).viewInsets.bottom,
-            left: 16,
-            right: 16,
-            top: 24,
-          ),
-          child: StatefulBuilder(
-            builder: (ctx, setState) => Form(
-              key: formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    isEdit ? 'Edit Artist' : 'Add Artist',
-                    style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: nameCtrl,
-                    decoration: const InputDecoration(labelText: 'Name'),
-                    validator: (v) =>
-                        v?.isEmpty == true ? 'Name required' : null,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: addressCtrl,
-                    decoration: const InputDecoration(labelText: 'Address'),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: albumsCtrl,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            labelText: 'Albums',
-                          ),
-                          validator: (v) {
-                            if (v == null || int.tryParse(v) == null) {
-                              return 'Enter a number';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextFormField(
-                          controller: yearCtrl,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            labelText: 'First Release Year',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    initialValue: gender,
-                    decoration: const InputDecoration(labelText: 'Gender'),
-                    items: const [
-                      DropdownMenuItem(value: 'm', child: Text('Male')),
-                      DropdownMenuItem(value: 'f', child: Text('Female')),
-                      DropdownMenuItem(value: 'o', child: Text('Other')),
-                    ],
-                    onChanged: (v) => setState(() => gender = v!),
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (formKey.currentState!.validate()) {
-                          if (isEdit) {
-                            context.read<ArtistBloc>().add(
-                              ArtistUpdateRequested(
-                                artist.copyWith(
-                                  name: nameCtrl.text.trim(),
-                                  address: addressCtrl.text.trim(),
-                                  noOfAlbumsReleased: int.parse(
-                                    albumsCtrl.text,
-                                  ),
-                                  firstReleaseYear: int.tryParse(yearCtrl.text),
-                                  gender: gender,
-                                ),
-                              ),
-                            );
-                          } else {
-                            context.read<ArtistBloc>().add(
-                              ArtistCreateRequested(
-                                name: nameCtrl.text.trim(),
-                                gender: gender,
-                                address: addressCtrl.text.trim(),
-                                noOfAlbumsReleased: int.parse(albumsCtrl.text),
-                                firstReleaseYear: int.tryParse(yearCtrl.text),
-                              ),
-                            );
-                          }
-                          Navigator.pop(sheetCtx);
-                        }
-                      },
-                      child: Text(isEdit ? 'Update' : 'Create'),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-              ),
-            ),
-          ),
-        ),
+        child: ArtistFormSheet(artist: artist),
       ),
     );
   }
 
-  void _confirmDelete(BuildContext context, ArtistEntity artist) {
+  void _showDeleteDialog(BuildContext context, ArtistEntity artist) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Delete Artist'),
-        content: Text(
-          'Delete ${artist.name}? All their songs will also be deleted.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              context.read<ArtistBloc>().add(ArtistDeleteRequested(artist.id));
-              Navigator.pop(context);
-            },
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: Colors.redAccent),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ArtistTile extends StatelessWidget {
-  final ArtistEntity artist;
-  final VoidCallback onTap;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-
-  const _ArtistTile({
-    required this.artist,
-    required this.onTap,
-    required this.onEdit,
-    required this.onDelete,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        onTap: onTap,
-        leading: CircleAvatar(
-          backgroundColor: const Color(0xFF4A47A3),
-          child: Text(
-            artist.name[0].toUpperCase(),
-            style: const TextStyle(color: Colors.white),
-          ),
-        ),
-        title: Text(
-          artist.name,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-        subtitle: Text(
-          '${artist.noOfAlbumsReleased} albums · ${artist.address}',
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              onPressed: onEdit,
-              icon: const Icon(Icons.edit_outlined, size: 20),
-            ),
-            IconButton(
-              onPressed: onDelete,
-              icon: const Icon(
-                Icons.delete_outline,
-                size: 20,
-                color: Colors.redAccent,
-              ),
-            ),
-            const Icon(Icons.chevron_right, color: Colors.white38),
-          ],
-        ),
+      builder: (_) => BlocProvider.value(
+        value: context.read<ArtistBloc>(),
+        child: ArtistDeleteDialog(artist: artist),
       ),
     );
   }

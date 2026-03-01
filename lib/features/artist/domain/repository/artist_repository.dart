@@ -1,6 +1,6 @@
+import 'package:artist_management_system/core/error/failures.dart';
 import 'package:artist_management_system/features/artist/domain/entities/artist.dart';
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failures.dart';
 
 abstract class ArtistRepository {
   Stream<Either<Failure, List<ArtistEntity>>> watchArtists();

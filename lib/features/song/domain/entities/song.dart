@@ -6,7 +6,7 @@ class SongEntity extends Equatable {
   final String title;
   final String albumName;
   final String genre;
-  final String? mp4Url; // optional — Firebase Storage download URL
+  final String? mp4Url;
   final DateTime createdAt;
   final DateTime updatedAt;
 

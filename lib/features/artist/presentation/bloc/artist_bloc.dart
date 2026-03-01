@@ -1,9 +1,11 @@
 import 'package:artist_management_system/features/artist/domain/entities/artist.dart';
+import 'package:artist_management_system/features/artist/domain/usecases/create_artist_usecase.dart';
+import 'package:artist_management_system/features/artist/domain/usecases/delete_artisit_usecase.dart';
+import 'package:artist_management_system/features/artist/domain/usecases/update_artist_usecase.dart';
+import 'package:artist_management_system/features/artist/domain/usecases/watch_artist_usecase.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:uuid/uuid.dart';
-import '../../domain/usecases/artist_usecases.dart';
-
 part 'artist_event.dart';
 part 'artist_state.dart';
 

@@ -1,5 +1,5 @@
+import 'package:artist_management_system/features/song/domain/entities/song.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../domain/entities/song.dart';
 
 class SongModel extends SongEntity {
   const SongModel({

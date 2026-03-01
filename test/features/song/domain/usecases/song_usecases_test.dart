@@ -1,13 +1,14 @@
-import 'dart:io';
-import 'package:artist_management_system/core/error/failures.dart';
 import 'package:artist_management_system/features/song/domain/entities/song.dart';
-import 'package:artist_management_system/features/song/domain/usecases/song_usecases.dart';
+import 'package:artist_management_system/core/error/failures.dart';
+import 'package:artist_management_system/features/song/domain/usecases/create_song_usecase.dart';
+import 'package:artist_management_system/features/song/domain/usecases/delete_song_usecase.dart';
+import 'package:artist_management_system/features/song/domain/usecases/update_song_usecase.dart';
+import 'package:artist_management_system/features/song/domain/usecases/watch_song_usecase.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../helpers/song_helpers.dart';
 
-// Helper — captures which artistId was forwarded to repository
 class _ArtistIdCapturingRepo extends MockSongRepository {
   String? capturedArtistId;
 
@@ -85,17 +86,9 @@ void main() {
     late CreateSong usecase;
     setUp(() => usecase = CreateSong(repo));
 
-    test('returns Right(null) on success without video', () async {
+    test('returns Right(null) on success', () async {
       repo.stubCreate(const Right(null));
       final result = await usecase(CreateSongParams(song: tSong()));
-      expect(result, const Right(null));
-    });
-
-    test('returns Right(null) on success with video file', () async {
-      repo.stubCreate(const Right(null));
-      final result = await usecase(
-        CreateSongParams(song: tSong(), videoFile: File('/tmp/test.mp4')),
-      );
       expect(result, const Right(null));
     });
 
@@ -108,21 +101,6 @@ void main() {
       }, (_) => fail('Should be Left'));
     });
 
-    test('forwards videoFile to repository', () async {
-      File? captured;
-      final capturingRepo = _VideoCapturingRepo(
-        onCreate: (_, file) {
-          captured = file;
-          return const Right(null);
-        },
-      );
-      final uc = CreateSong(capturingRepo);
-      final file = File('/tmp/video.mp4');
-      await uc(CreateSongParams(song: tSong(), videoFile: file));
-      expect(captured?.path, '/tmp/video.mp4');
-    });
-
-    // ─── CreateSongParams ──────────────────────────────────────────────────
     group('CreateSongParams', () {
       test('equal when song is the same', () {
         expect(
@@ -145,20 +123,9 @@ void main() {
     late UpdateSong usecase;
     setUp(() => usecase = UpdateSong(repo));
 
-    test('returns Right(null) on success without video', () async {
+    test('returns Right(null) on success', () async {
       repo.stubUpdate(const Right(null));
       final result = await usecase(UpdateSongParams(song: tSong()));
-      expect(result, const Right(null));
-    });
-
-    test('returns Right(null) on success replacing existing video', () async {
-      repo.stubUpdate(const Right(null));
-      final result = await usecase(
-        UpdateSongParams(
-          song: tSongWithVideo(),
-          videoFile: File('/tmp/new.mp4'),
-        ),
-      );
       expect(result, const Right(null));
     });
 
@@ -173,8 +140,8 @@ void main() {
 
     test('forwards updated song to repository', () async {
       SongEntity? captured;
-      final capturingRepo = _VideoCapturingRepo(
-        onUpdate: (s, _) {
+      final capturingRepo = _CapturingRepo(
+        onUpdate: (s) {
           captured = s;
           return const Right(null);
         },
@@ -185,7 +152,6 @@ void main() {
       expect(captured?.title, 'Updated Title');
     });
 
-    // ─── UpdateSongParams ──────────────────────────────────────────────────
     group('UpdateSongParams', () {
       test('equal when song is the same', () {
         expect(
@@ -208,22 +174,11 @@ void main() {
     late DeleteSong usecase;
     setUp(() => usecase = DeleteSong(repo));
 
-    test('returns Right(null) on success without mp4Url', () async {
+    test('returns Right(null) on success', () async {
       repo.stubDelete(const Right(null));
       final result = await usecase(const DeleteSongParams(songId: tSongId));
       expect(result, const Right(null));
     });
-
-    test(
-      'returns Right(null) on success with mp4Url (video cleanup)',
-      () async {
-        repo.stubDelete(const Right(null));
-        final result = await usecase(
-          const DeleteSongParams(songId: tSongId, mp4Url: tVideoUrl),
-        );
-        expect(result, const Right(null));
-      },
-    );
 
     test('returns Left(ServerFailure) on error', () async {
       repo.stubDelete(Left(const ServerFailure('Failed to delete song.')));
@@ -234,20 +189,6 @@ void main() {
       );
     });
 
-    test('forwards mp4Url to repository for storage cleanup', () async {
-      String? capturedUrl;
-      final capturingRepo = _VideoCapturingRepo(
-        onDelete: (_, url) {
-          capturedUrl = url;
-          return const Right(null);
-        },
-      );
-      final uc = DeleteSong(capturingRepo);
-      await uc(const DeleteSongParams(songId: tSongId, mp4Url: tVideoUrl));
-      expect(capturedUrl, tVideoUrl);
-    });
-
-    // ─── DeleteSongParams ──────────────────────────────────────────────────
     group('DeleteSongParams', () {
       test('equal when songId matches', () {
         expect(
@@ -262,50 +203,16 @@ void main() {
           isNot(equals(const DeleteSongParams(songId: 'b'))),
         );
       });
-
-      test('equal with same mp4Url', () {
-        expect(
-          const DeleteSongParams(songId: tSongId, mp4Url: tVideoUrl),
-          equals(const DeleteSongParams(songId: tSongId, mp4Url: tVideoUrl)),
-        );
-      });
-
-      test('not equal with different mp4Url', () {
-        expect(
-          const DeleteSongParams(songId: tSongId, mp4Url: 'url-a'),
-          isNot(
-            equals(const DeleteSongParams(songId: tSongId, mp4Url: 'url-b')),
-          ),
-        );
-      });
     });
   });
 }
 
-// ─── Capturing repo helpers ───────────────────────────────────────────────────
+class _CapturingRepo extends MockSongRepository {
+  final Either<Failure, void> Function(SongEntity)? onUpdate;
 
-class _VideoCapturingRepo extends MockSongRepository {
-  final Either<Failure, void> Function(SongEntity, File?)? onCreate;
-  final Either<Failure, void> Function(SongEntity, File?)? onUpdate;
-  final Either<Failure, void> Function(String, String?)? onDelete;
-
-  _VideoCapturingRepo({this.onCreate, this.onUpdate, this.onDelete});
+  _CapturingRepo({this.onUpdate});
 
   @override
-  Future<Either<Failure, void>> createSong(
-    SongEntity song, {
-    File? videoFile,
-  }) async => onCreate?.call(song, videoFile) ?? const Right(null);
-
-  @override
-  Future<Either<Failure, void>> updateSong(
-    SongEntity song, {
-    File? videoFile,
-  }) async => onUpdate?.call(song, videoFile) ?? const Right(null);
-
-  @override
-  Future<Either<Failure, void>> deleteSong(
-    String songId, {
-    String? mp4Url,
-  }) async => onDelete?.call(songId, mp4Url) ?? const Right(null);
+  Future<Either<Failure, void>> updateSong(SongEntity song) async =>
+      onUpdate?.call(song) ?? const Right(null);
 }

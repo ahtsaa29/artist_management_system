@@ -1,9 +1,9 @@
+import 'package:artist_management_system/core/error/exceptions.dart';
+import 'package:artist_management_system/core/error/failures.dart';
+import 'package:artist_management_system/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:artist_management_system/features/auth/domain/entities/user_entity.dart';
 import 'package:artist_management_system/features/auth/domain/repository/auth_repository.dart';
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/exceptions.dart';
-import '../../../../core/error/failures.dart';
-import '../../domain/entities/user_entity.dart';
-import '../datasources/auth_remote_datasource.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
